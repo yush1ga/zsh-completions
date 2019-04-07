@@ -5,7 +5,7 @@ function _dotfilesenv(){
   typeset -A opt_args
 
   local ret=1
-  local allowed_commands=(dotfilesenv delete git link list restore view)
+  local allowed_commands=(dotfilesenv delete git add reset commit push origin pull origin link list restore view)
 
   local cmd=''
   local option=''
@@ -33,13 +33,55 @@ function _dotfilesenv(){
   fi
 
   case $cmd in
+    (_dotfilesenv_delete)
+      _arguments \
+        '*: :_dotfilesenv_settings' && ret=0 
+      ;;
+    (_dotfilesenv_git_add_a)
+      _arguments \
+        '*: ::' && ret=0 
+      ;;
+    (_dotfilesenv_git_add)
+      _arguments \
+        '(-a --all)'{-a,--all}'[add changes from all tracked and untracked files]' \
+        '*: ::' && ret=0 
+      ;;
+    (_dotfilesenv_git_commit_m)
+      _arguments \
+        '*: ::' && ret=0 
+      ;;
+    (_dotfilesenv_git_commit)
+      _arguments \
+        '(-m --message)'{-m,--message}'[commit message]' \
+        '*: ::' && ret=0 
+      ;;
+    (_dotfilesenv_git_push_origin)
+      _arguments \
+        '*: :_dotfilesenv_git_push_origin_args' && ret=0 
+      ;;
+    (_dotfilesenv_git_push)
+      _arguments \
+        '*: :_dotfilesenv_git_push_args' && ret=0 
+      ;;
+    (_dotfilesenv_git_pull_origin)
+      _arguments \
+        '*: :_dotfilesenv_git_pull_origin_args' && ret=0 
+      ;;
+    (_dotfilesenv_git_pull)
+      _arguments \
+        '*: :_dotfilesenv_git_pull_args' && ret=0 
+      ;;
     (_dotfilesenv_git)
       _arguments \
-        '*: :_git' && ret=0 
+        '*: :_dotfilesenv_git_args' && ret=0 
       ;;
     (_dotfilesenv_list)
       _arguments \
         '*: ::' && ret=0 
+      ;;
+    (_dotfilesenv_restore)
+      _arguments \
+        '*: :_dotfilesenv_settings' && ret=0 
       ;;
     (_dotfilesenv)
       _arguments \
@@ -61,11 +103,57 @@ function _dotfilesenv_args() {
     'delete:delete a setting'
     'git:git command alias for ~/.dotfilesenv directory'
     'link:create a new setting and link'
-    'list:delete a setting'
+    'list:show settings'
     'restore:restore settings from .dotfilesenv'
-    'view:view'
+    'view:view ~/.dotfilesenv by specified command'
   )
   _describe -t commands "_dotfilesenv_args" commands "$@"
+}
+
+
+function _dotfilesenv_git_args() {
+  local commands; commands=(
+    'add:Add file contents to the index'
+    'reset:Reset current HEAD to the specified state'
+    'commit:Record changes to the repository'
+    'push:Update remote refs along with associated objects'
+    'pull:Fetch from and integrate with another repository or a local branch'
+  )
+  _describe -t commands "_dotfilesenv_git_args" commands "$@"
+}
+
+
+function _dotfilesenv_git_push_args() {
+  local commands; commands=(
+    'origin:'
+  )
+  _describe -t commands "_dotfilesenv_git_push_args" commands "$@"
+}
+
+
+function _dotfilesenv_git_push_origin_args() {
+  _values \
+    'values' \
+    master \
+}
+
+
+function _dotfilesenv_git_pull_args() {
+  local commands; commands=(
+    'origin:'
+  )
+  _describe -t commands "_dotfilesenv_git_pull_args" commands "$@"
+}
+
+
+function _dotfilesenv_git_pull_origin_args() {
+  _values \
+    'values' \
+    master \
+}
+
+fucntion _dotfilesenv_settings() {
+  _values 'settings' $(dotfilesenv list -v)
 }
 
 

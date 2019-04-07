@@ -11,15 +11,53 @@ options:
 arguments:
   - name: delete
     description: delete a setting
+    arguments: _dotfilesenv_settings
   - name: git
     description: git command alias for ~/.dotfilesenv directory
-    arguments: _git
+    # only frequently used
+    arguments:
+      - name: add
+        description: Add file contents to the index
+        options:
+          - names:
+              - -a
+              - --all
+            description: add changes from all tracked and untracked files
+            arguments: ':'
+      - name: reset
+        description: Reset current HEAD to the specified state
+      - name: commit
+        description: Record changes to the repository
+        options:
+          - names:
+              - -m
+              - --message
+            description: commit message
+            arguments: ':'
+      - name: push
+        description: Update remote refs along with associated objects
+        arguments:
+          - name: origin
+            arguments:
+              - master
+      - name: pull
+        description: Fetch from and integrate with another repository or a local branch
+        arguments:
+          - name: origin
+            arguments:
+              - master
   - name: link
     description: create a new setting and link
   - name: list
     arguments: ':'
-    description: delete a setting
+    description: show settings
   - name: restore
     description: restore settings from .dotfilesenv
+    arguments: _dotfilesenv_settings
   - name: view
-    description: view
+    description: view ~/.dotfilesenv by specified command
+shell: |
+  fucntion _dotfilesenv_settings() {
+    _values 'settings' $(dotfilesenv list -v)
+  }
+
