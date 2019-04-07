@@ -1,0 +1,72 @@
+#compdef dotfilesenv
+
+function _dotfilesenv(){
+  local context curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  local ret=1
+  local allowed_commands=(dotfilesenv delete git link list restore view)
+
+  local cmd=''
+  local option=''
+  local cmd_pos=0
+  local option_pos=0
+  local pos=0
+
+  for v in $(echo $LBUFFER); do
+    if [[ $v =~ ^-.+ ]]; then
+      option=$v
+      option_pos=$pos
+    else
+      if [[ -n ${allowed_commands[(re)${v}]} ]]; then
+        cmd+=_${v}
+        cmd_pos=$pos
+      fi
+    fi
+    (( pos++ ))
+  done;
+  
+  if [ $cmd_pos -lt $option_pos ]; then
+    local opt=${option#-}
+    opt=${opt#-}
+    cmd+=_${opt}
+  fi
+
+  case $cmd in
+    (_dotfilesenv_git)
+      _arguments \
+        '*: :_git' && ret=0 
+      ;;
+    (_dotfilesenv_list)
+      _arguments \
+        '*: ::' && ret=0 
+      ;;
+    (_dotfilesenv)
+      _arguments \
+        '(-v --version)'{-v,--version}'[show version]' \
+        '(--help)--help[show help]' \
+        '*: :_dotfilesenv_args' && ret=0 
+      ;;
+    (*)
+      _arguments         '*: :_files -/' && ret=0 
+  esac
+
+  return $ret
+}
+
+
+
+function _dotfilesenv_args() {
+  local commands; commands=(
+    'delete:delete a setting'
+    'git:git command alias for ~/.dotfilesenv directory'
+    'link:create a new setting and link'
+    'list:delete a setting'
+    'restore:restore settings from .dotfilesenv'
+    'view:view'
+  )
+  _describe -t commands "_dotfilesenv_args" commands "$@"
+}
+
+
+_dotfilesenv "$@"

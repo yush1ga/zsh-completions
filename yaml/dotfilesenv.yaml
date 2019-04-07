@@ -1,0 +1,25 @@
+name: dotfilesenv
+description: Awesome management for dotfiles
+options:
+  - names:
+      - -v
+      - --version
+    description: show version
+  - names:
+      - --help
+    description: show help
+arguments:
+  - name: delete
+    description: delete a setting
+  - name: git
+    description: git command alias for ~/.dotfilesenv directory
+    arguments: _git
+  - name: link
+    description: create a new setting and link
+  - name: list
+    arguments: ':'
+    description: delete a setting
+  - name: restore
+    description: restore settings from .dotfilesenv
+  - name: view
+    description: view
